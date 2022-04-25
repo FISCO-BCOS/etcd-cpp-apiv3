@@ -10,7 +10,7 @@ add_dependencies(etcd-cpp-api protobuf_generates)
 target_link_libraries(etcd-cpp-api PUBLIC
                       ${Boost_LIBRARIES}
                       ${CPPREST_LIB}
-                      ${PROTOBUF_LIBRARIES}
+                      protobuf::libprotobuf
                       ${OPENSSL_LIBRARIES}
                       ${GRPC_LIBRARIES})
 
