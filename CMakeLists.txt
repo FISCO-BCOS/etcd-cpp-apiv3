@@ -1,4 +1,14 @@
 cmake_minimum_required (VERSION 3.3 FATAL_ERROR)
+if (NOT DEFINED URL_BASE)
+    set(URL_BASE "github.com")
+endif ()
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+include(HunterGate)
+HunterGate(
+        URL "https://${URL_BASE}/FISCO-BCOS/hunter/archive/fba041fdf10320b8eb4d6b5c5a2d22a7422a7485.tar.gz"
+        SHA1 "ddc6641be16cb1223cd8e91930f938e45f721c64"
+        FILEPATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.cmake"
+)
 project (etcd-cpp-api)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -26,7 +36,7 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     )
 endif()
 
-option(BUILD_SHARED_LIBS "Build shared libraries" ON)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(BUILD_ETCD_TESTS "Build test cases" OFF)
 
 # reference: https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/RPATH-handling#always-full-rpath
@@ -39,24 +49,14 @@ if(MSVC)
     set(CMAKE_GNUtoMS ON)
 endif()
 
-find_package(Boost REQUIRED COMPONENTS system thread random)
-if(APPLE)
-    # If we're on OS X check for Homebrew's copy of OpenSSL instead of Apple's
-    if(NOT OpenSSL_DIR)
-        find_program(HOMEBREW brew)
-        if(HOMEBREW STREQUAL "HOMEBREW-NOTFOUND")
-            message(WARNING "Homebrew not found: not using Homebrew's OpenSSL")
-            if(NOT OPENSSL_ROOT_DIR)
-                message(WARNING "Use -DOPENSSL_ROOT_DIR for non-Apple OpenSSL")
-            endif()
-        else()
-            execute_process(COMMAND brew --prefix openssl
-                OUTPUT_VARIABLE OPENSSL_ROOT_DIR
-                OUTPUT_STRIP_TRAILING_WHITESPACE)
-        endif()
-    endif()
-endif()
+set (CMAKE_CXX_STANDARD 17)
+hunter_add_package(OpenSSL)
+hunter_add_package(Boost COMPONENTS all)
+hunter_add_package(cpprestsdk)
+hunter_add_package(gRPC)
+hunter_add_package(Protobuf)
 
+find_package(Boost REQUIRED COMPONENTS system thread random)
 find_package(OpenSSL REQUIRED)
 find_package(Protobuf REQUIRED)
 if(Protobuf_PROTOC_EXECUTABLE)
@@ -69,22 +69,11 @@ if(Protobuf_PROTOC_EXECUTABLE)
     endif()
 endif()
 find_package(cpprestsdk QUIET)
-if(cpprestsdk_FOUND)
-    set(CPPREST_INCLUDE_DIR)
-    set(CPPREST_LIB cpprestsdk::cpprest)
-else()
-    find_library(CPPREST_LIB NAMES cpprest)
-    find_path(CPPREST_INCLUDE_DIR NAMES cpprest/http_client.h)
-endif()
-
 find_package(gRPC QUIET)
-if(gRPC_FOUND)
-    set(GRPC_LIBRARIES gRPC::gpr gRPC::grpc gRPC::grpc++)
-    get_target_property(GRPC_CPP_PLUGIN gRPC::grpc_cpp_plugin LOCATION)
-else()
-    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindGRPC.cmake)
-    set(GRPC_LIBRARIES ${GPR_LIBRARY} ${GRPC_LIBRARY} ${GRPC_GRPC++_LIBRARY})
-endif()
+set(GRPC_LIBRARIES gRPC::gpr gRPC::grpc gRPC::grpc++ gRPC::grpc++)
+get_target_property(GRPC_CPP_PLUGIN gRPC::grpc_cpp_plugin LOCATION)
+
+add_definitions(-DWITH_GRPC_CHANNEL_CLASS)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/GenerateProtobufGRPC.cmake)
 
@@ -109,20 +98,13 @@ endif()
 set(CMAKE_REQUIRED_INCLUDES "${CMAKE_REQUIRED_INCLUDES} ${GRPC_INCLUDE_DIR}")
 set(CMAKE_REQUIRED_LIBRARIES "${CMAKE_REQUIRED_LIBRARIES} ${GRPC_LIBRARIES}")
 set(CMAKE_REQUIRED_DEFINITIONS "${CMAKE_REQUIRED_DEFINITIONS}")
-check_cxx_source_compiles("
-#include <grpc++/grpc++.h>
-namespace grpc { class Channel; }
-int main() {}
-" GRPC_CHANNEL_CLASS_FOUND)
-if(GRPC_CHANNEL_CLASS_FOUND)
-    add_definitions(-DWITH_GRPC_CHANNEL_CLASS)
-endif()
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
 enable_testing()
 add_subdirectory(src)
-add_subdirectory(tst)
+if(TESTS)
+    add_subdirectory(tst)
+endif()
 
 install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/etcd/Client.hpp
                ${CMAKE_CURRENT_SOURCE_DIR}/etcd/KeepAlive.hpp
