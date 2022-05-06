@@ -7,9 +7,11 @@ set_source_files_properties(${PROTOBUF_GENERATES} PROPERTIES GENERATED TRUE)
 add_library(etcd-cpp-api ${CPP_CLIENT_SRC} ${PROTOBUF_GENERATES})
 add_dependencies(etcd-cpp-api protobuf_generates)
 
+find_package(cpprestsdk CONFIG REQUIRED)
+
 target_link_libraries(etcd-cpp-api PUBLIC
                       ${Boost_LIBRARIES}
-                      ${CPPREST_LIB}
+                      cpprestsdk::cpprest
                       protobuf::libprotobuf
                       ${OPENSSL_LIBRARIES}
                       ${GRPC_LIBRARIES})

@@ -37,6 +37,7 @@ public:
     void init_compare(CompareResult, CompareTarget);
     void init_compare(std::string const &old_value, CompareResult, CompareTarget);
     void init_compare(int64_t old_value, CompareResult, CompareTarget);
+    void init_lease_compare(int64_t old_lease, CompareResult result, CompareTarget target);
 
     void setup_basic_failure_operation(std::string const &key);
     void setup_set_failure_operation(std::string const &key, std::string const &value, int64_t leaseid);
