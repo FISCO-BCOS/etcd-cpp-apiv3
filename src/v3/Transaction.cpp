@@ -54,6 +54,7 @@ void etcdv3::Transaction::init_compare(std::string const& old_value, CompareResu
     compare->set_value(old_value);
 }
 
+
 void etcdv3::Transaction::init_compare(int64_t old_index, CompareResult result, CompareTarget target){
     Compare* compare = txn_request->add_compare();
     compare->set_result(detail::to_compare_result(result));
@@ -61,6 +62,15 @@ void etcdv3::Transaction::init_compare(int64_t old_index, CompareResult result, 
     compare->set_key(key);
 
     compare->set_mod_revision(old_index);
+}
+
+void etcdv3::Transaction::init_lease_compare(int64_t old_lease, CompareResult result, CompareTarget target){
+    Compare* compare = txn_request->add_compare();
+    compare->set_result(detail::to_compare_result(result));
+    compare->set_target(detail::to_compare_target(target));
+    compare->set_key(key);
+
+    compare->set_lease(old_lease);
 }
 
 /**
