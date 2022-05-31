@@ -13,7 +13,7 @@ target_link_libraries(etcd-cpp-api PUBLIC
                       ${Boost_LIBRARIES}
                       cpprestsdk::cpprest
                       protobuf::libprotobuf
-                      ${OPENSSL_LIBRARIES}
+                      OpenSSL::SSL OpenSSL::Crypto
                       ${GRPC_LIBRARIES})
 
 target_include_directories(etcd-cpp-api PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/../proto/gen)
