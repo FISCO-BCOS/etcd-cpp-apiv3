@@ -5,10 +5,11 @@ endif ()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(HunterGate)
 HunterGate(
-        URL "https://${URL_BASE}/FISCO-BCOS/hunter/archive/162ff7cde3d843e43afdab8fe3214275c35ef168.tar.gz"
-        SHA1 "0ba8099fe89beb0d44986c750fe0d44040725d99"
-        FILEPATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.cmake"
+    URL "https://${URL_BASE}/FISCO-BCOS/hunter/archive/162ff7cde3d843e43afdab8fe3214275c35ef168.tar.gz"
+    SHA1 "0ba8099fe89beb0d44986c750fe0d44040725d99"
+    FILEPATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.cmake
 )
+
 project (etcd-cpp-api)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

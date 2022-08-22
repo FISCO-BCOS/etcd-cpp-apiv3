@@ -23,12 +23,10 @@ hunter_config(cpprestsdk VERSION 2.10.18-local
 )
 
 hunter_config(
-    Protobuf VERSION "3.14.0-4a09d77-p0-local"
-    URL
-    "https://osp-1257653870.cos.ap-guangzhou.myqcloud.com/FISCO-BCOS/deps/protobuf/v3.14.0-4a09d77-p0.tar.gz
-    https://github.com/cpp-pm/protobuf/archive/v3.14.0-4a09d77-p0.tar.gz"
+    Protobuf VERSION "v3.19.4"
+    URL "https://github.com/cpp-pm/protobuf/archive/v3.19.4-p0.tar.gz"
     SHA1
-    3553ff3bfd7d0c4c1413b1552064b3dca6fa213e
+    e5b797dbc4e6ad92d0924ae86c130be4354c35b6
 )
 hunter_config(re2 VERSION ${HUNTER_re2_VERSION} CMAKE_ARGS CMAKE_POSITION_INDEPENDENT_CODE=TRUE RE2_BUILD_TESTING=OFF)
 hunter_config(abseil VERSION ${HUNTER_abseil_VERSION} CMAKE_ARGS CMAKE_CXX_FLAGS=-std=c++11 CMAKE_POSITION_INDEPENDENT_CODE=TRUE ABSL_ENABLE_INSTALL=ON ABSL_RUN_TESTS=OFF)
